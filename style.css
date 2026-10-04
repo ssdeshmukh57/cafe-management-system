@@ -1,0 +1,63 @@
+/* Sales History Card */
+.sales-history-card {
+    background: #fdfaf6;
+    border: 1px solid var(--accent-gold);
+    padding: 18px;
+    border-radius: 8px;
+    margin-bottom: 25px;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.sales-summary-boxes {
+    display: flex;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.sales-box {
+    flex: 1;
+    background: #ffffff;
+    border: 1px solid var(--border-color);
+    padding: 12px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.sales-box h4 {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.sales-box p {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--primary-brown);
+}
+
+.btn-sales-toggle {
+    background: transparent;
+    color: var(--accent-gold);
+    border: 1px solid var(--accent-gold);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    margin-right: 10px;
+}
+
+.btn-sales-toggle:hover {
+    background: var(--accent-gold);
+    color: #ffffff;
+}
+
+.btn-clear-sales {
+    background: #dc2626;
+    color: white;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    margin-top: 15px;
+    width: 100%;
+}

@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brew & Bite Cafe - Customer Menu</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- GSAP Animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+    <style>
+        :root {
+            --primary-dark: #120a06;
+            --primary-brown: #2e1a0e;
+            --accent-gold: #e5b869;
+            --bg-light: #f9f6f0;
+            --card-bg: #ffffff;
+            --text-dark: #2b2b2b;
+            --text-muted: #6e6e6e;
+            --border-color: #e8e2d8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            overflow-x: hidden;
+            padding-bottom: 50px;
+        }
+
+        /* Navbar */
+        .navbar {
+            background-color: var(--primary-dark);
+            padding: 20px 40px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #ffffff;
+            text-decoration: none;
+            letter-spacing: 1px;
+        }
+
+        .logo span { color: var(--accent-gold); }
+
+        /* Hero Banner */
+        .hero-banner {
+            background: radial-gradient(circle at center, #2e1a0e 0%, #120a06 100%);
+            color: #ffffff;
+            text-align: center;
+            padding: 45px 20px;
+        }
+
+        .hero-banner h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.8rem;
+            color: var(--accent-gold);
+            margin-bottom: 8px;
+        }
+
+        .hero-banner p {
+            font-weight: 300;
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        /* Main Menu Layout */
+        .main-container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .section-title {
+            text-align: center;
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            color: var(--primary-brown);
+            margin-bottom: 10px;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            color: var(--text-muted);
+            margin-bottom: 30px;
+            font-size: 0.95rem;
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px;
+        }
+
+        /* Customer Card Design */
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 25px 20px;
+            text-align: center;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+            border-color: var(--accent-gold);
+        }
+
+        .card h3 {
+            font-size: 1.1rem;
+            color: var(--primary-brown);
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .card .price {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #b0823b;
+            margin-bottom: 15px;
+        }
+
+        .btn-add {
+            background: var(--primary-brown);
+            color: var(--accent-gold);
+            border: 1px solid var(--accent-gold);
+            padding: 10px 18px;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-add:hover {
+            background: var(--accent-gold);
+            color: var(--primary-dark);
+        }
+
+        /* Order Success Badge */
+        .cart-status {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--primary-dark);
+            color: var(--accent-gold);
+            padding: 12px 24px;
+            border-radius: 30px;
+            border: 1px solid var(--accent-gold);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: none;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="navbar">
+        <a href="#" class="logo">BREW & <span>BITE</span></a>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero-banner">
+        <h2>Welcome to Brew & Bite</h2>
+        <p>Explore our menu and place your order at the counter.</p>
+    </section>
+
+    <!-- Menu Container -->
+    <div class="main-container">
+        <h2 class="section-title">Our Menu</h2>
+        <p class="section-subtitle">Freshly prepared beverages & snacks</p>
+
+        <div class="menu-grid" id="customerMenuGrid"></div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div class="cart-status" id="statusToast">✨ Item added!</div>
+
+    <script>
+        let defaultMenu = [
+            { name: 'Masala Chai', price: 20 },
+            { name: 'Green Tea', price: 30 },
+            { name: 'Hot Cappuccino', price: 50 },
+            { name: 'Hot Chocolate', price: 80 },
+            { name: 'Classic Cold Coffee', price: 60 },
+            { name: 'Thick Choco Coffee', price: 80 },
+            { name: 'Cold Coffee w/ Ice Cream', price: 90 },
+            { name: 'Oreo Shake', price: 100 },
+            { name: 'Blue Lagoon Mojito', price: 80 },
+            { name: 'Veg Grilled Sandwich', price: 60 },
+            { name: 'Cheese Garlic Sandwich', price: 80 },
+            { name: 'Paneer Tandoori Sandwich', price: 90 },
+            { name: 'Classic Veg Burger', price: 70 },
+            { name: 'Cheese Lava Burger', price: 95 },
+            { name: 'Classic Fries', price: 60 },
+            { name: 'Peri Peri Fries', price: 80 },
+            { name: 'Cheese Corn Pizza', price: 120 },
+            { name: 'Margherita Pizza', price: 130 },
+            { name: 'White Sauce Pasta', price: 110 }
+        ];
+
+        let menuItems = JSON.parse(localStorage.getItem('cafe_menu')) || defaultMenu;
+
+        function renderCustomerMenu() {
+            const grid = document.getElementById('customerMenuGrid');
+            grid.innerHTML = '';
+
+            menuItems.forEach(item => {
+                grid.innerHTML += `
+                    <div class="card">
+                        <h3>${item.name}</h3>
+                        <div class="price">₹${item.price}</div>
+                        <button class="btn-add" onclick="selectItem('${item.name}', ${item.price})">Select Item</button>
+                    </div>
+                `;
+            });
+
+            gsap.fromTo(".card", 
+                { opacity: 0, y: 20 }, 
+                { opacity: 1, y: 0, duration: 0.4, stagger: 0.05, ease: "power2.out" }
+            );
+        }
+
+        function selectItem(name, price) {
+            let currentCart = JSON.parse(localStorage.getItem('cafe_cart')) || [];
+            
+            let existingItem = currentCart.find(item => item.name === name);
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                currentCart.push({ name, price, quantity: 1 });
+            }
+
+            localStorage.setItem('cafe_cart', JSON.stringify(currentCart));
+            localStorage.setItem('cart_updated', Date.now());
+
+            const toast = document.getElementById('statusToast');
+            toast.innerText = `🛒 "${name}" POS Billing वर ॲड झाला आहे!`;
+            toast.style.display = 'block';
+
+            gsap.fromTo(toast, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.3 });
+
+            setTimeout(() => {
+                gsap.to(toast, { opacity: 0, y: 20, duration: 0.3, onComplete: () => {
+                    toast.style.display = 'none';
+                }});
+            }, 2000);
+        }
+
+        window.onload = renderCustomerMenu;
+    </script>
+</body>
+</html>

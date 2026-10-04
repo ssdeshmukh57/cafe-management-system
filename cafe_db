@@ -1,0 +1,35 @@
+CREATE DATABASE cafe_db;
+USE cafe_db;
+
+-- 1. Menu Table
+CREATE TABLE menu_items (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    price DECIMAL(10,2) NOT NULL,
+    category VARCHAR(50)
+);
+
+-- 2. Orders Table
+CREATE TABLE orders (
+    order_id INT AUTO_INCREMENT PRIMARY KEY,
+    customer_name VARCHAR(100),
+    total_amount DECIMAL(10,2),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 3. Order Items Table
+CREATE TABLE order_items (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    order_id INT,
+    item_name VARCHAR(100),
+    quantity INT,
+    price DECIMAL(10,2),
+    FOREIGN KEY (order_id) REFERENCES orders(order_id)
+);
+
+-- सॅम्पल मेनू डेटा
+INSERT INTO menu_items (name, price, category) VALUES 
+('कोल कॉफी', 60.00, 'Beverages'),
+('मसाला चहा', 20.00, 'Beverages'),
+('व्हेज बर्गर', 90.00, 'Snacks'),
+('चीज सँडविच', 80.00, 'Snacks');

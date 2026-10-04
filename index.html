@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brew & Bite Cafe - POS System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- GSAP Animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+    <style>
+        :root {
+            --primary-dark: #120a06;
+            --primary-brown: #2e1a0e;
+            --accent-gold: #e5b869;
+            --bg-light: #f9f6f0;
+            --card-bg: #ffffff;
+            --text-dark: #2b2b2b;
+            --text-muted: #6e6e6e;
+            --border-color: #e8e2d8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            overflow-x: hidden;
+        }
+
+        /* Navbar */
+        .navbar {
+            background-color: var(--primary-dark);
+            padding: 18px 40px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            max-width: 1300px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #ffffff;
+            text-decoration: none;
+            letter-spacing: 1px;
+        }
+
+        .logo span { color: var(--accent-gold); }
+
+        .btn-sales-toggle, .btn-admin-toggle {
+            background: rgba(229, 184, 105, 0.15);
+            color: var(--accent-gold);
+            border: 1px solid var(--accent-gold);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-left: 5px;
+        }
+
+        .btn-sales-toggle:hover, .btn-admin-toggle:hover {
+            background: var(--accent-gold);
+            color: var(--primary-dark);
+            font-weight: 600;
+            transform: translateY(-2px);
+        }
+
+        /* Hero Banner */
+        .hero-banner {
+            position: relative;
+            background: radial-gradient(circle at center, #2e1a0e 0%, #120a06 100%);
+            color: #ffffff;
+            text-align: center;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-banner h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.8rem;
+            color: var(--accent-gold);
+            margin-bottom: 8px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+        }
+
+        .hero-banner p {
+            font-weight: 300;
+            font-size: 1.05rem;
+            opacity: 0.9;
+        }
+
+        /* Main Layout */
+        .main-container {
+            display: flex;
+            gap: 30px;
+            max-width: 1300px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .menu-section {
+            flex: 1.8;
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+            border: 1px solid var(--border-color);
+        }
+
+        .cart-section {
+            flex: 1.2;
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            height: fit-content;
+            position: sticky;
+            top: 90px;
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        /* Menu Cards */
+        .card {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            padding: 18px 12px;
+            text-align: center;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .card h3 { font-size: 0.9rem; margin-bottom: 5px; }
+        .card p { font-weight: 600; color: #b0823b; }
+
+        .admin-form-card, .sales-history-card {
+            background: #fdfaf6;
+            border: 1px dashed var(--accent-gold);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .btn-close-admin { background: transparent; border: none; color: #e53e3e; cursor: pointer; font-weight: 600; }
+
+        .form-group { display: flex; gap: 10px; }
+        .form-group input { padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; }
+        .form-group input[type="text"] { flex: 2; }
+        .form-group input[type="number"] { flex: 1; }
+        .form-group button { background: var(--accent-gold); color: var(--primary-dark); font-weight: 600; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; }
+
+        .sales-summary-boxes { display: flex; gap: 10px; margin-top: 10px; }
+        .sales-box { flex: 1; background: #fff; border: 1px solid var(--border-color); padding: 10px; border-radius: 6px; text-align: center; }
+
+        /* Tables & Cart */
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th { background: #fcf9f5; color: var(--primary-brown); padding: 8px; font-size: 0.8rem; }
+        td { border-bottom: 1px solid var(--border-color); padding: 8px 4px; text-align: center; font-size: 0.85rem; }
+
+        .qty-controls { display: inline-flex; align-items: center; gap: 5px; }
+        .btn-qty { background: var(--bg-light); border: 1px solid var(--border-color); width: 22px; height: 22px; cursor: pointer; border-radius: 3px; }
+        .btn-delete { background: #e53e3e; color: white; border: none; padding: 3px 6px; border-radius: 4px; cursor: pointer; font-size: 0.75rem; }
+
+        .bill-summary { margin-top: auto; padding-top: 15px; border-top: 2px dashed var(--border-color); }
+        .summary-row { display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 5px; }
+        .total-row { font-size: 1.1rem; font-weight: 600; color: var(--primary-brown); margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border-color); }
+
+        .btn-print { 
+            background: var(--primary-brown); 
+            color: var(--accent-gold); 
+            border: 1px solid var(--accent-gold); 
+            padding: 12px; 
+            width: 100%; 
+            border-radius: 6px; 
+            font-weight: 600; 
+            cursor: pointer; 
+            margin-top: 10px; 
+            transition: all 0.2s ease;
+        }
+
+        .btn-print:hover { background: var(--primary-dark); }
+        .btn-clear-sales { background: #dc2626; color: white; border: none; padding: 8px; border-radius: 4px; width: 100%; margin-top: 10px; cursor: pointer; }
+
+        @media print {
+            .navbar, .hero-banner, .menu-section, th:nth-child(5), td:nth-child(5), .btn-print { display: none !important; }
+            .main-container { margin: 0; padding: 0; width: 100%; }
+            .cart-section { border: none; box-shadow: none; padding: 0; position: static; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="navbar">
+        <div class="nav-container">
+            <a href="#" class="logo">BREW & <span>BITE</span></a>
+            <div>
+                <a href="customer.html" target="_blank" class="btn-sales-toggle" style="text-decoration: none; display: inline-block;">👁️ Customer View</a>
+                <button class="btn-sales-toggle" onclick="toggleSalesHistory()">📊 Daily Sales History</button>
+                <button class="btn-admin-toggle" onclick="toggleAdminPanel()">🔒 Admin Access</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero-banner">
+        <div class="hero-content">
+            <h2>Taste the Perfection</h2>
+            <p>Freshly brewed coffee & delicious quick bites made with love.</p>
+        </div>
+    </section>
+
+    <!-- Main Section -->
+    <div class="main-container">
+        
+        <!-- Menu Side -->
+        <div class="menu-section">
+            <h2>Our Special Menu</h2>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">Select items to add to current order</p>
+
+            <!-- Admin Form -->
+            <div class="admin-form-card" id="adminPanel" style="display: none;">
+                <div class="admin-header">
+                    <h3>➕ Add New Item (Admin Only)</h3>
+                    <button class="btn-close-admin" onclick="closeAdminPanel()">✕ Close</button>
+                </div>
+                <div class="form-group">
+                    <input type="text" id="newItemName" placeholder="Item Name">
+                    <input type="number" id="newItemPrice" placeholder="Price (₹)">
+                    <button onclick="addNewMenuItem()">Save Item</button>
+                </div>
+            </div>
+
+            <!-- Sales History Panel -->
+            <div class="sales-history-card" id="salesPanel" style="display: none;">
+                <div class="admin-header">
+                    <h3>📊 Daily Sales History</h3>
+                    <button class="btn-close-admin" onclick="closeSalesPanel()">✕ Close</button>
+                </div>
+                <div class="sales-summary-boxes">
+                    <div class="sales-box">
+                        <h4>Total Orders</h4>
+                        <p id="totalOrdersCount">0</p>
+                    </div>
+                    <div class="sales-box">
+                        <h4>Total Revenue</h4>
+                        <p>₹<span id="totalRevenueAmount">0.00</span></p>
+                    </div>
+                </div>
+                <div style="max-height: 180px; overflow-y: auto; margin-top: 10px;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Order #</th>
+                                <th>Time</th>
+                                <th>Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody id="salesHistoryBody"></tbody>
+                    </table>
+                </div>
+                <button class="btn-clear-sales" onclick="clearSalesHistory()">🗑 Clear Sales History</button>
+            </div>
+
+            <!-- Cards Grid -->
+            <div class="menu-grid" id="menuGrid"></div>
+        </div>
+
+        <!-- Cart Side -->
+        <div class="cart-section">
+            <h2>Current Order</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>Price</th>
+                        <th>Qty</th>
+                        <th>Total</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="cartBody"></tbody>
+            </table>
+
+            <div class="bill-summary">
+                <div class="summary-row"><span>Subtotal</span><span>₹<span id="subtotal">0.00</span></span></div>
+                <div class="summary-row"><span>GST (5%)</span><span>₹<span id="tax">0.00</span></span></div>
+                <div class="summary-row total-row"><span>Grand Total</span><span>₹<span id="grandTotal">0.00</span></span></div>
+                <button class="btn-print" onclick="completeOrderAndPrint()">🖨️ Complete & Print Receipt</button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Application Script -->
+    <script>
+        const ADMIN_PIN = "1234";
+
+        let defaultMenu = [
+            { name: 'Masala Chai', price: 20 },
+            { name: 'Green Tea', price: 30 },
+            { name: 'Hot Cappuccino', price: 50 },
+            { name: 'Hot Chocolate', price: 80 },
+            { name: 'Classic Cold Coffee', price: 60 },
+            { name: 'Thick Choco Coffee', price: 80 },
+            { name: 'Cold Coffee w/ Ice Cream', price: 90 },
+            { name: 'Oreo Shake', price: 100 },
+            { name: 'Blue Lagoon Mojito', price: 80 },
+            { name: 'Veg Grilled Sandwich', price: 60 },
+            { name: 'Cheese Garlic Sandwich', price: 80 },
+            { name: 'Paneer Tandoori Sandwich', price: 90 },
+            { name: 'Classic Veg Burger', price: 70 },
+            { name: 'Cheese Lava Burger', price: 95 },
+            { name: 'Classic Fries', price: 60 },
+            { name: 'Peri Peri Fries', price: 80 },
+            { name: 'Cheese Corn Pizza', price: 120 },
+            { name: 'Margherita Pizza', price: 130 },
+            { name: 'White Sauce Pasta', price: 110 }
+        ];
+
+        let menuItems = JSON.parse(localStorage.getItem('cafe_menu')) || defaultMenu;
+        let salesHistory = JSON.parse(localStorage.getItem('cafe_sales')) || [];
+        let cart = JSON.parse(localStorage.getItem('cafe_cart')) || [];
+
+        function loadMenu() {
+            const menuGrid = document.getElementById('menuGrid');
+            if (!menuGrid) return;
+            menuGrid.innerHTML = '';
+            menuItems.forEach(item => {
+                menuGrid.innerHTML += `
+                    <div class="card" onclick="addToCart(this, '${item.name}', ${item.price})">
+                        <h3>${item.name}</h3>
+                        <p>₹${item.price}</p>
+                    </div>
+                `;
+            });
+
+            gsap.fromTo(".card", 
+                { opacity: 0, y: 30 }, 
+                { opacity: 1, y: 0, duration: 0.5, stagger: 0.04, ease: "power2.out" }
+            );
+        }
+
+        function toggleAdminPanel() {
+            const adminPanel = document.getElementById('adminPanel');
+            if (adminPanel.style.display === 'block') {
+                adminPanel.style.display = 'none';
+                return;
+            }
+            const enteredPin = prompt("Admin PIN (Default: 1234):");
+            if (enteredPin === ADMIN_PIN) {
+                adminPanel.style.display = 'block';
+                document.getElementById('salesPanel').style.display = 'none';
+            } else if (enteredPin !== null) {
+                alert("❌ Wrong PIN!");
+            }
+        }
+
+        function closeAdminPanel() { document.getElementById('adminPanel').style.display = 'none'; }
+
+        function toggleSalesHistory() {
+            const salesPanel = document.getElementById('salesPanel');
+            if (salesPanel.style.display === 'block') {
+                salesPanel.style.display = 'none';
+                return;
+            }
+            const enteredPin = prompt("Enter PIN to view sales:");
+            if (enteredPin === ADMIN_PIN) {
+                salesPanel.style.display = 'block';
+                document.getElementById('adminPanel').style.display = 'none';
+                renderSalesHistory();
+            } else if (enteredPin !== null) {
+                alert("❌ Wrong PIN!");
+            }
+        }
+
+        function closeSalesPanel() { document.getElementById('salesPanel').style.display = 'none'; }
+
+        function renderSalesHistory() {
+            const historyBody = document.getElementById('salesHistoryBody');
+            const totalCount = document.getElementById('totalOrdersCount');
+            const totalRev = document.getElementById('totalRevenueAmount');
+
+            historyBody.innerHTML = '';
+            let revenueSum = 0;
+
+            salesHistory.forEach((order, index) => {
+                revenueSum += parseFloat(order.grandTotal);
+                historyBody.innerHTML += `<tr>
+                    <td>#${index + 1}</td>
+                    <td>${order.time}</td>
+                    <td>₹${order.grandTotal}</td>
+                </tr>`;
+            });
+
+            totalCount.innerText = salesHistory.length;
+            totalRev.innerText = revenueSum.toFixed(2);
+        }
+
+        function clearSalesHistory() {
+            if (confirm("Are you sure you want to clear sales history?")) {
+                salesHistory = [];
+                localStorage.setItem('cafe_sales', JSON.stringify(salesHistory));
+                renderSalesHistory();
+            }
+        }
+
+        function addNewMenuItem() {
+            const nameInput = document.getElementById('newItemName');
+            const priceInput = document.getElementById('newItemPrice');
+            const name = nameInput.value.trim();
+            const price = parseFloat(priceInput.value);
+
+            if (name === '' || isNaN(price) || price <= 0) {
+                alert('Please enter a valid item name and price!');
+                return;
+            }
+
+            menuItems.push({ name, price });
+            localStorage.setItem('cafe_menu', JSON.stringify(menuItems));
+            loadMenu();
+
+            nameInput.value = '';
+            priceInput.value = '';
+            alert(`✅ "${name}" saved to menu!`);
+        }
+
+        function addToCart(element, name, price) {
+            if (element) {
+                gsap.fromTo(element, { scale: 0.9 }, { scale: 1, duration: 0.3, ease: "elastic.out(1.2, 0.4)" });
+            }
+
+            let existingItem = cart.find(item => item.name === name);
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({ name, price, quantity: 1 });
+            }
+            updateCart();
+        }
+
+        function updateCart() {
+            localStorage.setItem('cafe_cart', JSON.stringify(cart));
+            updateCartUIOnly();
+        }
+
+        function syncCartFromStorage() {
+            cart = JSON.parse(localStorage.getItem('cafe_cart')) || [];
+            updateCartUIOnly();
+        }
+
+        function updateCartUIOnly() {
+            let cartBody = document.getElementById('cartBody');
+            if (!cartBody) return;
+
+            cartBody.innerHTML = '';
+            let subtotal = 0;
+
+            cart.forEach((item, index) => {
+                let total = item.price * item.quantity;
+                subtotal += total;
+
+                cartBody.innerHTML += `<tr>
+                    <td>${item.name}</td>
+                    <td>₹${item.price}</td>
+                    <td>
+                        <div class="qty-controls">
+                            <button class="btn-qty" onclick="decreaseQuantity(${index})">-</button>
+                            <span>${item.quantity}</span>
+                            <button class="btn-qty" onclick="addToCart(null, '${item.name}', ${item.price})">+</button>
+                        </div>
+                    </td>
+                    <td>₹${total}</td>
+                    <td><button class="btn-delete" onclick="removeFromCart(${index})">❌</button></td>
+                </tr>`;
+            });
+
+            let tax = subtotal * 0.05;
+            let grandTotal = subtotal + tax;
+
+            document.getElementById('subtotal').innerText = subtotal.toFixed(2);
+            document.getElementById('tax').innerText = tax.toFixed(2);
+            document.getElementById('grandTotal').innerText = grandTotal.toFixed(2);
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            updateCart();
+        }
+
+        function decreaseQuantity(index) {
+            if (cart[index].quantity > 1) {
+                cart[index].quantity -= 1;
+            } else {
+                cart.splice(index, 1);
+            }
+            updateCart();
+        }
+
+        function completeOrderAndPrint() {
+            if (cart.length === 0) {
+                alert("Cart is empty!");
+                return;
+            }
+
+            let grandTotal = document.getElementById('grandTotal').innerText;
+            let now = new Date();
+            let timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+            let orderData = {
+                items: [...cart],
+                grandTotal: grandTotal,
+                time: timeString,
+                date: now.toLocaleDateString()
+            };
+
+            salesHistory.push(orderData);
+            localStorage.setItem('cafe_sales', JSON.stringify(salesHistory));
+
+            window.print();
+            cart = [];
+            localStorage.removeItem('cafe_cart');
+            updateCartUIOnly();
+        }
+
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'cart_updated' || e.key === 'cafe_cart') {
+                syncCartFromStorage();
+            }
+        });
+
+        window.onload = () => {
+            loadMenu();
+            syncCartFromStorage();
+        };
+    </script>
+</body>
+</html>
